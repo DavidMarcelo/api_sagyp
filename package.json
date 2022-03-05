@@ -8,6 +8,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  
   "dependencies": {
     "@apollo/client": "^3.5.9",
     "apollo-server": "^3.6.3",
