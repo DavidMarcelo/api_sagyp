@@ -1,7 +1,7 @@
 
 module.exports = app => {
     const login = require("../controllers/login.controller");
-    const asistencia = require("../models/asistencia.model");
+    const asistencia = require("../controllers/asistencias.controller");
 
     var router = require('express').Router();
 

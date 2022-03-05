@@ -4,15 +4,6 @@ const Asistencia = function(asistencia){
     this.noEmp = asistencia.noEmp;
 };
 
-/*Asistencia.getAll = result => {
-    let query = "SELECT * FROM secamgob_db_si_rh.tblc_personal WHERE NoEmp = 61854";
-    sql.query(query, (err, res) => {
-        if(err) result (null, err);
-
-        result (null, res);
-    });
-};*/
-
 Asistencia.asis = (noEmp, result) => {
     console.log("Asistencia", noEmp);
     

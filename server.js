@@ -3,12 +3,12 @@ const cors = require('cors');
 const app = express();
 const LoginService = require('./controllers/login.controller');
 
-/*var corsOptions = {
+var corsOptions = {
     origin: 'http://localhost:8080'
-};*/
+};
 //db.sequelize.sync();
-//app.use(cors(corsOptions));
-app.use(cors());
+app.use(cors(corsOptions));
+//app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 
