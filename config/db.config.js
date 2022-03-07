@@ -6,10 +6,10 @@ module.exports = {
     PASSWORD: 'admin117',
     DB: 'secamgob_db_catalogos',
     dialect: "mysql",
-    /*pool: {
+    pool: {
         max: 5,
         min: 0,
         acquire: 30000,
         idle: 10000
-    }*/
+    }
 }

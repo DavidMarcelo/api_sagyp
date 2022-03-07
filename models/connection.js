@@ -5,7 +5,9 @@ const connection = mysql.createConnection({
     host: dbConfig.HOST,
     user: dbConfig.USER,
     password: dbConfig.PASSWORD,
-    database: dbConfig.DB
+    database: dbConfig.DB,
+    //connectionLimit : 100,
+    debug : 'false'
 });
 
 connection.connect(err => {
