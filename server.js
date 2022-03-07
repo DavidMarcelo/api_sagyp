@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session')
 const cors = require('cors');
 const app = express();
 const LoginService = require('./controllers/login.controller');
@@ -11,6 +12,11 @@ app.use(cors(corsOptions));
 //app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
+app.use(session({
+    secret: '',
+    resave: false,
+    saveUninitialized: false
+}));
 
 app.get("/", (req, res) => {
     res.json(res);

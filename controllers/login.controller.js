@@ -15,6 +15,11 @@ exports.login = (req, res) =>{
     Login.login(new Login(req.body), (err, data) =>{
         if(err) res.send(err);
 
+        /*req.session.sessionLogin = {
+            session: true,
+            name: req.body.noEmp,
+            clave: req.body.clave
+        }*/
         res.send(data);
     });
 
