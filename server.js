@@ -13,7 +13,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 app.use(session({
-    secret: '',
+    secret: '1234567',
     resave: false,
     saveUninitialized: false
 }));
