@@ -3,7 +3,7 @@
 module.exports = {
     HOST: 'secamgob.croerepvs9vt.us-east-1.rds.amazonaws.com',
     USER: 'adminRoot',
-    PASSWORD: 'admin117',
+    PASSWORD: 'admin',
     DB: 'secamgob_db_catalogos',
     dialect: "mysql",
     pool: {
