@@ -6,7 +6,7 @@ const connection = mysql.createConnection({
     user: dbConfig.USER,
     password: dbConfig.PASSWORD,
     database: dbConfig.DB,
-    connectionLimit : 10000
+    //connectionLimit : 10000
     //debug : 'false'
 });
 
@@ -15,5 +15,4 @@ connection.connect(err => {
 
     console.log("Conexion BD exitosa!!!");
 });
-
 module.exports = connection;
