@@ -6,7 +6,7 @@ const connection = mysql.createConnection({
     user: dbConfig.USER,
     password: dbConfig.PASSWORD,
     database: dbConfig.DB,
-    //connectionLimit : 100,
+    connectionLimit : 10000
     //debug : 'false'
 });
 

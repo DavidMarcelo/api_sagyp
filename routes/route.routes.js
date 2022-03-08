@@ -8,6 +8,7 @@ module.exports = app => {
     var router = require('express').Router();
 
     router.get("/", login.findAll);
+    
     router.post("/login", login.login);
 
     router.get("/asistencia", asistencia.asis);
