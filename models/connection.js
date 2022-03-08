@@ -7,11 +7,10 @@ const connection = mysql.createConnection({
     password: dbConfig.PASSWORD,
     database: dbConfig.DB,
     //connectionLimit : 100,
-    debug : 'false'
+    //debug : 'false'
 });
 
 connection.connect(err => {
-    console.log("Tratando...");
     if(err) return console.log("Error de conexion! => ",err);
 
     console.log("Conexion BD exitosa!!!");

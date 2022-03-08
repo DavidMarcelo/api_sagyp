@@ -15,41 +15,93 @@ Login.getAll = result => {
 };
 
 Login.login = (login, result) => {
-    console.log('clave => '+login.noEmp);
-    sql.query(`SELECT * FROM tblc_usuarios WHERE NoEmp = ${login.noEmp}`, (err, res)=>{
-        if (err) result(err, null);
+    console.log('login => '+login.noEmp);
 
 
-        sql.query(`SELECT * FROM tblc_usuarios WHERE Clave = ${login.clave}`, (err, res)=>{
+    sql.query(`
+        SELECT 
+        secamgob_db_si_rh.tblc_personal.Nombre,
+        secamgob_db_catalogos.tblc_usuarios.CveHerencia,
+        secamgob_db_catalogos.tblc_usuarios.CveUsuario,
+        secamgob_db_catalogos.tblc_usuarios.Usuario,
+        secamgob_db_catalogos.tblc_usuarios.Clave,
+        secamgob_db_si_rh.tblc_adscricion.DesAds,
+        secamgob_db_si_rh.tblc_personal.CveAds
+        FROM secamgob_db_si_rh.tblc_personal 
+        Join secamgob_db_catalogos.tblc_usuarios on
+        secamgob_db_si_rh.tblc_personal.NoEmp = secamgob_db_catalogos.tblc_usuarios.NoEmp
+        Join secamgob_db_si_rh.tblc_adscricion on
+        secamgob_db_si_rh.tblc_personal.CveAds = secamgob_db_si_rh.tblc_adscricion.CveAds
+        where secamgob_db_si_rh.tblc_personal.NoEmp = ${login.noEmp}
+        and secamgob_db_catalogos.tblc_usuarios.Clave = ${login.clave};
+    `, (err, res) => {
+        if(err) result(err, null);
+
+        //El logue fue un exito y devolveremos todos los menus que pertenece esa persona dependiendo al area que esta asignado.
+        sql.query(`
+            SELECT
+            tblp_areas_sistemas.CveSistema,
+            tblp_areas_sistemas.CveUsuario,
+            tblc_sistemas.Sistema
+            FROM
+            secamgob_db_catalogos.tblp_areas_sistemas
+            LEFT JOIN secamgob_db_catalogos.tblc_sistemas ON tblp_areas_sistemas.CveSistema = tblc_sistemas.CveSistema
+            WHERE
+            tblp_areas_sistemas.CveArea = ${res[0].CveAds}
+            ORDER BY
+            tblc_sistemas.Sistema ASC
+        `, (err, res) =>{
             if(err) result(err, null);
-            sql.query(`SELECT * FROM tblp_herencias INNER JOIN tblc_sistemas 
-            WHERE tblp_herencias.CveUsuario = ${res[0].CveUsuario} GROUP BY tblp_herencias.CveSistema`, (err, res)=>{
-                if(err) result(err, null);
-                /*sql.query(`SELECT * FROM tblp_herencias INNER JOIN tblc_modulos
-                    WHERE tblp_herencias.CveUsuario = ${res[1].CveUsuario} 
-                     ORDER BY tblc_modulos.orden ASC`, (err, res) => {
-                        //AND tblc_modulos.CveModulo = ${res[1].CveModulo}
-                        //AND tblp_herencias.CvePrivilegio = ${res[1].CvePrivilegio}
-                        //AND tblp_herencias.CveSistema = ${res[1].CveSistema} 
-                        if(err) result(err, null);
-                        console.log("module ->");
-                        result(null, res);
-                    });*/
-                    console.log(res.length);
-                result(null, res);
-            });
+
+            result(null, res);
         });
     });
 }
 
-/*Login.asis = (noEmp, result) => {
-    console.log("Asistencia", noEmp);
-    
-    sql.query(`SELECT * FROM secamgob_db_si_rh.tblp_registros WHERE secamgob_db_si_rh.tblp_registros.NoEmp = ${noEmp}`, (err, res)=>{
+Login.loginMenus = (login, result) => {
+    console.log('login => '+login.noEmp);
+
+
+    sql.query(`
+        SELECT 
+        secamgob_db_si_rh.tblc_personal.Nombre,
+        secamgob_db_catalogos.tblc_usuarios.CveHerencia,
+        secamgob_db_catalogos.tblc_usuarios.CveUsuario,
+        secamgob_db_catalogos.tblc_usuarios.Usuario,
+        secamgob_db_catalogos.tblc_usuarios.Clave,
+        secamgob_db_si_rh.tblc_adscricion.DesAds,
+        secamgob_db_si_rh.tblc_personal.CveAds
+        FROM secamgob_db_si_rh.tblc_personal 
+        Join secamgob_db_catalogos.tblc_usuarios on
+        secamgob_db_si_rh.tblc_personal.NoEmp = secamgob_db_catalogos.tblc_usuarios.NoEmp
+        Join secamgob_db_si_rh.tblc_adscricion on
+        secamgob_db_si_rh.tblc_personal.CveAds = secamgob_db_si_rh.tblc_adscricion.CveAds
+        where secamgob_db_si_rh.tblc_personal.NoEmp = ${login.noEmp}
+        and secamgob_db_catalogos.tblc_usuarios.Clave = ${login.clave};
+    `, (err, res) => {
         if(err) result(err, null);
 
-        result(null, res);
+        //El logue fue un exito y devolveremos todos los menus que pertenece esa persona dependiendo al area que esta asignado.
+        sql.query(`
+            SELECT
+            secamgob_db_catalogos.tblp_areas_sistemas.CveSistema,
+            secamgob_db_catalogos.tblp_areas_sistemas.CveUsuario,
+            secamgob_db_catalogos.tblc_sistemas.Sistema
+            FROM
+            secamgob_db_catalogos.tblp_areas_sistemas
+            LEFT JOIN secamgob_db_catalogos.tblc_sistemas 
+            ON secamgob_db_catalogos.tblp_areas_sistemas.CveSistema = secamgob_db_catalogos.tblc_sistemas.CveSistema
+            WHERE
+            secamgob_db_catalogos.tblp_areas_sistemas.CveArea = ${res[0].CveAds}
+            and secamgob_db_catalogos.tblp_areas_sistemas.CveUsuario = ${res[0].CveUsuario}
+            ORDER BY
+            tblc_sistemas.Sistema ASC
+        `, (err, res) =>{
+            if(err) result(err, null);
+
+            result(null, res);
+        });
     });
-}*/
+}
 
 module.exports = Login;

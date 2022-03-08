@@ -5,8 +5,8 @@ exports.resguardo = (req, res) =>{
 
     console.log("Body -> ",req.body.noEmp);
     Resguardo.resg(req.body.noEmp, (err, data) => {
-        if(err) res.send(err);
+        if(err) res.json(err);
 
-        res.send(data);
+        res.json(data);
     });
 }

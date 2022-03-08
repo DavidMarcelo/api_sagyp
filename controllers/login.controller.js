@@ -2,36 +2,25 @@ const Login = require('../models/login.model');
 
 exports.findAll = (req, res) => {
     Login.getAll((err, data) => {
-        if (err) res.status.send(err);
+        if (err) res.status.json(err);
 
-        res.send(data);
+        res.json(data);
     });
 };
 
 exports.login = (req, res) =>{
-    if(!req.body) res.send("Error XD");
+    if(!req.body) res.json("Error XD");
     console.log(req.body);
-    //res.send(req.body);
     Login.login(new Login(req.body), (err, data) =>{
-        if(err) res.send(err);
+        if(err) res.status.json(err);
 
+        
         /*req.session.sessionLogin = {
             session: true,
             name: req.body.noEmp,
             clave: req.body.clave
         }*/
-        res.send(data);
+        res.json(data);
     });
 
-}
-
-exports.asis = (req, res) =>{
-    if(!req.body) res.send("Error XD");
-
-    console.log("Body -> ",req.body.noEmp);
-    Login.asis(req.body.noEmp, (err, data) => {
-        if(err) res.send(err);
-
-        res.send(data);
-    });
 }

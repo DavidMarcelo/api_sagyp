@@ -1,12 +1,12 @@
-const Asistencia = require('../models/login.model');
+const Asistencia = require('../models/asistencia.model');
 
 exports.asis = (req, res) =>{
-    if(!req.body) res.send("Error XD");
+    if(!req.body) res.json("Error XD");
 
     console.log("Body -> ",req.body.noEmp);
     Asistencia.asis(req.body.noEmp, (err, data) => {
-        if(err) res.send(err);
+        if(err) res.json(err);
 
-        res.send(data);
+        res.json(data);
     });
 }
