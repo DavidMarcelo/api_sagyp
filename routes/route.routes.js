@@ -17,5 +17,7 @@ module.exports = app => {
 
     router.get("/menu", menu.getAllMenus);
 
+    //router.get("/servicios/lista", servicio.listService)
+
     app.use('/api', router);
 }
