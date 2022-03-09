@@ -10,7 +10,14 @@ Asistencia.asis = (noEmp, result) => {
     sql.query(`SELECT * FROM secamgob_db_si_rh.tblp_registros WHERE secamgob_db_si_rh.tblp_registros.NoEmp = ${noEmp}`, (err, res)=>{
         if(err) result(err, null);
 
-        result(null, res);
+        if(res.length == 0){
+            error = {
+                msg: "Error de numero de empleado!"
+            }
+            result(error, null);
+        }else{
+            result(null, res);   
+        }
     });
 }
 

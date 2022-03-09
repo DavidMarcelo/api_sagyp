@@ -64,7 +64,7 @@ Login.login = (login, result) => {
                     if(err) result(err, null);
 
                     if(res.length == 0){
-                        result("No se encontraros sus sistemas", null)
+                        result("No se encontraros los menu de su area!", null)
                     }else{
                         data = {
                             user: userLogueado,

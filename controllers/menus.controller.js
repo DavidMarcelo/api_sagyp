@@ -5,7 +5,7 @@ exports.getAllMenus = (req, res) => {
 
     console.log("Cuerpoo=",req.body);
     Menu.getMenu(new Menu(req.body),(err, data) => {
-        if (err) return res.json("Error al obtener el menu.");
+        if (err) return res.json(err);
 
         res.json(data);
     });

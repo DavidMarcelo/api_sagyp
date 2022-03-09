@@ -27,8 +27,14 @@ Menu.getMenu = (menu, result) => {
     `, (err, res) => {
         if(err) result(err, null);
 
-
-        result(null, res);
+        if(res.length == 0){
+            let error = {
+                msg: "No tiene permisos para este sistema!"
+            }
+            result(error, null);
+        }else{
+            result(null, res);
+        }
     });
 }
 
