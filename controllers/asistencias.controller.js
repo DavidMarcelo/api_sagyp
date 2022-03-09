@@ -5,7 +5,7 @@ exports.asis = (req, res) =>{
 
     console.log("Body -> ",req.body.noEmp);
     Asistencia.asis(req.body.noEmp, (err, data) => {
-        if(err) res.json(err);
+        if(err) return res.json("Error al obtener la asistencias!");
 
         res.json(data);
     });

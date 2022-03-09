@@ -2,7 +2,7 @@ const Login = require('../models/login.model');
 
 exports.findAll = (req, res) => {
     Login.getAll((err, data) => {
-        if (err) res.status.json(err);
+        if (err) return res.json("Error de api");
 
         res.json(data);
     });
@@ -11,15 +11,10 @@ exports.findAll = (req, res) => {
 exports.login = (req, res) =>{
     if(!req.body) res.json("Error XD");
     console.log(req.body);
-    Login.login(new Login(req.body), (err, data) =>{
-        if(err) res.status.json(err);
 
-        
-        /*req.session.sessionLogin = {
-            session: true,
-            name: req.body.noEmp,
-            clave: req.body.clave
-        }*/
+    Login.login(new Login(req.body), (err, data) =>{
+        if(err) return res.json("Erro de usuario o contraseña!");
+
         res.json(data);
     });
 

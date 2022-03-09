@@ -1,11 +1,11 @@
 const Menu = require('../models/menus.model');
 
 exports.getAllMenus = (req, res) => {
-    if(!req.body) res.json("Error al obtener el menu");
+    if(!req.body) return res.json("Error al obtener el menu");
 
     console.log("Cuerpoo=",req.body);
     Menu.getMenu(new Menu(req.body),(err, data) => {
-        if (err) res.status.json(err);
+        if (err) return res.json("Error al obtener el menu.");
 
         res.json(data);
     });

@@ -17,7 +17,6 @@ Login.getAll = result => {
 Login.login = (login, result) => {
     console.log('login => '+login.noEmp);
 
-
     sql.query(`
         SELECT 
         secamgob_db_si_rh.tblc_personal.Nombre,
@@ -35,26 +34,32 @@ Login.login = (login, result) => {
         where secamgob_db_si_rh.tblc_personal.NoEmp = ${login.noEmp}
         and secamgob_db_catalogos.tblc_usuarios.Clave = ${login.clave};
     `, (err, res) => {
-        if(err) result("Usuario o contraseña no valido!", null);
+        if(err) {            
+            result(err, null);
+        }else{
+            if(res.length == 0){
+                result("Error", null);
+            }else{
+                //El logue fue un exito y devolveremos todos los menus que pertenece esa persona dependiendo al area que esta asignado.
+                sql.query(`
+                    SELECT
+                    tblp_areas_sistemas.CveSistema,
+                    tblp_areas_sistemas.CveUsuario,
+                    tblc_sistemas.Sistema
+                    FROM
+                    secamgob_db_catalogos.tblp_areas_sistemas
+                    LEFT JOIN secamgob_db_catalogos.tblc_sistemas ON tblp_areas_sistemas.CveSistema = tblc_sistemas.CveSistema
+                    WHERE
+                    tblp_areas_sistemas.CveArea = ${res[0].CveAds}
+                    ORDER BY
+                    tblc_sistemas.Sistema ASC
+                `, (err, res) =>{
+                    if(err) result(err, null);
 
-        //El logue fue un exito y devolveremos todos los menus que pertenece esa persona dependiendo al area que esta asignado.
-        sql.query(`
-            SELECT
-            tblp_areas_sistemas.CveSistema,
-            tblp_areas_sistemas.CveUsuario,
-            tblc_sistemas.Sistema
-            FROM
-            secamgob_db_catalogos.tblp_areas_sistemas
-            LEFT JOIN secamgob_db_catalogos.tblc_sistemas ON tblp_areas_sistemas.CveSistema = tblc_sistemas.CveSistema
-            WHERE
-            tblp_areas_sistemas.CveArea = ${res[0].CveAds}
-            ORDER BY
-            tblc_sistemas.Sistema ASC
-        `, (err, res) =>{
-            if(err) result(err, null);
-
-            result(null, res);
-        });
+                    result(null, res);
+                });
+            }
+        }
     });
 }
 
