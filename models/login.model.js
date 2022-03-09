@@ -35,7 +35,7 @@ Login.login = (login, result) => {
         where secamgob_db_si_rh.tblc_personal.NoEmp = ${login.noEmp}
         and secamgob_db_catalogos.tblc_usuarios.Clave = ${login.clave};
     `, (err, res) => {
-        if(err) result(err, null);
+        if(err) result("Usuario o contraseña no valido!", null);
 
         //El logue fue un exito y devolveremos todos los menus que pertenece esa persona dependiendo al area que esta asignado.
         sql.query(`
