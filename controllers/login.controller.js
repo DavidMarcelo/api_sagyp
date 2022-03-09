@@ -13,7 +13,7 @@ exports.login = (req, res) =>{
     console.log(req.body);
 
     Login.login(new Login(req.body), (err, data) =>{
-        if(err) return res.json("Erro de usuario o contraseña!");
+        if(err) return res.json(err);
 
         res.json(data);
     });

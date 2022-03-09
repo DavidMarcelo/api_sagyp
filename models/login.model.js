@@ -20,7 +20,9 @@ Login.login = (login, result) => {
     sql.query(`
         SELECT 
         secamgob_db_si_rh.tblc_personal.Nombre,
+        secamgob_db_si_rh.tblc_personal.FecNac,
         secamgob_db_catalogos.tblc_usuarios.CveHerencia,
+        secamgob_db_catalogos.tblc_usuarios.Foto,
         secamgob_db_catalogos.tblc_usuarios.CveUsuario,
         secamgob_db_catalogos.tblc_usuarios.Usuario,
         secamgob_db_catalogos.tblc_usuarios.Clave,
@@ -38,9 +40,14 @@ Login.login = (login, result) => {
             result(err, null);
         }else{
             if(res.length == 0){
-                result("Error", null);
+                error = {
+                    msj: "Error de usuario o contraseña!"
+                }
+                result(error, null);
             }else{
+                let data = {};
                 //El logue fue un exito y devolveremos todos los menus que pertenece esa persona dependiendo al area que esta asignado.
+                let userLogueado = res[0];
                 sql.query(`
                     SELECT
                     tblp_areas_sistemas.CveSistema,
@@ -56,7 +63,15 @@ Login.login = (login, result) => {
                 `, (err, res) =>{
                     if(err) result(err, null);
 
-                    result(null, res);
+                    if(res.length == 0){
+                        result("No se encontraros sus sistemas", null)
+                    }else{
+                        data = {
+                            user: userLogueado,
+                            menu: res
+                        }
+                        result(null, data);
+                    }
                 });
             }
         }
