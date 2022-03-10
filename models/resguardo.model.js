@@ -32,12 +32,24 @@ Resguardo.resg = (noEmp, result) => {
         WHERE secamgob_db_bienesinformaticos.tblp_equipos.NoEmp = ${noEmp}`, (err, res)=>{
             if(err) result(err, null);
 
+            
             if(res.length == 0){
                 let error = {
                     msg: "Error, numero de empelado no valido!"
                 }
                 result(error, null);
             }else{
+                let servicios = [];
+                console.log(servicios);
+                for (let index = 0; index < 100; index++) {
+                    let aa = {
+                        name: "lkskkhdbks",
+                        edad: 12,
+                        diua: 09
+                    }
+                    servicios.push(aa);
+                }
+                console.log(servicios);
                 result(null, res);
             }        
         });
