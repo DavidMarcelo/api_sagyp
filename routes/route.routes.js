@@ -4,20 +4,22 @@ module.exports = app => {
     const asistencia = require("../controllers/asistencias.controller");
     const resguardo = require("../controllers/resguardo.controller");
     const menu = require("../controllers/menus.controller");
+    const servicio = require("../controllers/solicitud.controller");
 
     var router = require('express').Router();
 
-    router.get("/", login.findAll);
+    router.post("/", login.findAll);
     
     router.post("/login", login.login);
 
-    router.get("/asistencia", asistencia.asis);
+    router.post("/asistencia", asistencia.asis);
 
-    router.get("/resguardo", resguardo.resguardo);
+    router.post("/resguardo", resguardo.resguardo);
 
-    router.get("/menu", menu.getAllMenus);
+    router.post("/menu", menu.getAllMenus);
 
-    //router.get("/servicios/lista", servicio.listService)
+    router.post("/servicios/list", servicio.listService);
+    router.post("/servicios/create", servicio.createService);
 
     app.use('/api', router);
 }

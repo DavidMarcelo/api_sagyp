@@ -8,7 +8,6 @@ const Menu = function(menu){
 Menu.getMenu = (menu, result) => {
     console.log('Menu => ',menu);
 
-
     sql.query(`
         SELECT
         tblp_herencias.CveModulo,
@@ -16,7 +15,7 @@ Menu.getMenu = (menu, result) => {
         tblc_modulos.Modulo
         FROM
         secamgob_db_catalogos.tblp_herencias
-        LEFT JOIN secamgob_db_catalogos.tblc_modulos 
+        JOIN secamgob_db_catalogos.tblc_modulos 
         ON tblp_herencias.CveModulo = tblc_modulos.CveModulo
         WHERE
         tblp_herencias.CveSistema = ${menu.cveSistema} AND

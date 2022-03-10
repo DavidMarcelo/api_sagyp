@@ -19,6 +19,7 @@ Login.login = (login, result) => {
 
     sql.query(`
         SELECT 
+        secamgob_db_si_rh.tblc_personal.CvePer,
         secamgob_db_si_rh.tblc_personal.Nombre,
         secamgob_db_si_rh.tblc_personal.FecNac,
         secamgob_db_catalogos.tblc_usuarios.CveHerencia,
