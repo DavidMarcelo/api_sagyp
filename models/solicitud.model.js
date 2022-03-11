@@ -20,7 +20,12 @@ const nombreAtendedor = function(result, cveUsuario, servicio){
 
         if(res.length == 0){
             console.log("error");
-            result("Error de numero de empleado (No coincide con el que atendío).", null);
+            //result("Error de numero de empleado (No coincide con el que atendío).", null);
+            let data = {
+                servicio: servicio,
+                atendio: res
+            }
+            result(null, data);
         }else{
             let data = {
                 servicio: servicio,
@@ -32,10 +37,10 @@ const nombreAtendedor = function(result, cveUsuario, servicio){
 }
 
 const consultaEquipos =  function(cvePer, result){
-    console.log("consulta inicial");
+    console.log("consulta inicial",cvePer);
     //var aa = "Mensaje incial";
     //let atendioServicio = [];
-    let servicio = [];
+    //let servicio = [];
     sql.query(`
         SELECT 
         secamgob_db_servicios.tblp_servicios.IdEquipo,
@@ -46,15 +51,12 @@ const consultaEquipos =  function(cvePer, result){
         secamgob_db_servicios.tblp_servicios.FecCap,
         secamgob_db_servicios.tblp_servicios.TipoServ,
         secamgob_db_catalogos.tblc_estatus.DesEst,
-        secamgob_db_si_rh.tblc_personal.Nombre,
         secamgob_db_catalogos.tblc_tipoequipo.DesTipEqp
         FROM secamgob_db_servicios.tblp_servicios
         join secamgob_db_bienesinformaticos.tblp_equipos
         on secamgob_db_bienesinformaticos.tblp_equipos.IdEquipo = secamgob_db_servicios.tblp_servicios.IdEquipo
         join secamgob_db_catalogos.tblc_tipoequipo
         on secamgob_db_catalogos.tblc_tipoequipo.CveTipEqp = secamgob_db_bienesinformaticos.tblp_equipos.CveTipEqp
-        join secamgob_db_si_rh.tblc_personal
-        on secamgob_db_si_rh.tblc_personal.NoEmp = secamgob_db_servicios.tblp_servicios.CveUsuario
         join secamgob_db_catalogos.tblc_estatus
         on secamgob_db_catalogos.tblc_estatus.Tipo = 1 
         where secamgob_db_servicios.tblp_servicios.CvePer = ${cvePer}
@@ -66,17 +68,18 @@ const consultaEquipos =  function(cvePer, result){
     `, (err, res) => {
         if(err) result(err, null);
 
-        
-        servicio.push(res);
+        console.log("res->",res);
+        //servicio.push(res);
         if(res.length == 0){
             let error = {
                 msg: "La clave no coincide!, verificar de nuevo."
             }
             result(error, null);
         }else{
-            for (let i = 0; i < res.length; i++) {
-                nombreAtendedor(result, res[i].CveUsuario, servicio);
-            }
+            //for (let i = 0; i < res.length; i++) {
+            result(null, res);
+                //nombreAtendedor(result, res[i].CveUsuario, servicio);
+            //}
             
         }
     });
@@ -118,15 +121,14 @@ Solicitud.list = (cvePer, result) => {
         }else{
             let servicios = [];
             let atendio = [];
-            console.log(servicios);
+            console.log(res.length);
             for (let index = 0; index < res.length; index++) {
                 if(res[index].IdEquipo > 0 && res[index].CveSistema == 0){
                     console.log("incio");
-                    atendio = consultaEquipos(cvePer, result);
-                    console.log("fin",atendio);
+                    consultaEquipos(cvePer, result);
                 }else if(res[index].CveSistema > 0 && res[index].IdEquipo == 0){
                     console.log("Sistema");
-                    sql.query(`
+                    /*sql.query(`
                         SELECT 
                         secamgob_db_servicios.tblp_servicios.IdEquipo,
                         secamgob_db_servicios.tblp_servicios.CveUsuario,
@@ -177,7 +179,7 @@ Solicitud.list = (cvePer, result) => {
                             });
                             servicios.push(res);
                         }
-                    });
+                    });*/
                 }
             }
         }
@@ -199,6 +201,7 @@ Solicitud.create = (solicitud, result) => {
             secamgob_db_servicios.tblp_servicios.CveUsuario,
             secamgob_db_servicios.tblp_servicios.CveSistema,
             secamgob_db_servicios.tblp_servicios.Extension,
+            secamgob_db_servicios.tblp_servicios.Estatus,
             secamgob_db_servicios.tblp_servicios.ObservaCerrado
         )
         VALUE 
@@ -211,6 +214,7 @@ Solicitud.create = (solicitud, result) => {
             "${solicitud.cveUsuario}",
             "${solicitud.cveSistema}",
             "${solicitud.extension}",
+            "${1}",
             "${"no se quue llevara"}"
         )
     `, (err, res) => {

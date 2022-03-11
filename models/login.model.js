@@ -35,7 +35,7 @@ Login.login = (login, result) => {
         Join secamgob_db_si_rh.tblc_adscricion on
         secamgob_db_si_rh.tblc_personal.CveAds = secamgob_db_si_rh.tblc_adscricion.CveAds
         where secamgob_db_si_rh.tblc_personal.NoEmp = ${login.noEmp}
-        and secamgob_db_catalogos.tblc_usuarios.Clave = "${login.clave}";
+        and secamgob_db_catalogos.tblc_usuarios.Clave = "${login.clave}"
     `, (err, res) => {
         if(err) {            
             result(err, null);
