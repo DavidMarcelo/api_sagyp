@@ -20,9 +20,11 @@ const Solicitud = function(solicitud){
 
     /**Para crear servicios en usuario, secretaria y tecnico */
     this.cveModulo = solicitud.cveModulo;
+    this.cveAds = solicitud.cveAds;
 };
 
-const nombreAtendedor = function(result, cveUsuario, servicio){
+const nombreAtendedor = function(result, cveUsuario, sistemas, equipos){
+    console.log("Atendedor");
     sql.query(`
         SELECT
         Nombre
@@ -35,12 +37,15 @@ const nombreAtendedor = function(result, cveUsuario, servicio){
             console.log("error");
             //result("Error de numero de empleado (No coincide con el que atendío).", null);
             let data = {
-                msg: "El numero de emplado no coincide!"
+                sistema: sistemas,
+                equipo:  equipos,
+                atendio: "No contiene ningun usuario"
             }
-            result(err, null);
+            result(null, data);
         }else{
             let data = {
-                servicio: servicio,
+                sistema: sistemas,
+                equipo:  equipos,
                 atendio: res
             }
             result(null, data);
@@ -78,11 +83,18 @@ const consultaEquipos =  function(cvePer, result){
         if(err) result(err, null);
 
         //result(null, res);
-        nombreAtendedor(result, res[0].CveUsuario, res);
+        //nombreAtendedor(result, res[0].CveUsuario, res);
+        if(res.length == 0){
+            console.log("Cero Equipos");
+            consultaSistemas(cvePer, result, res)
+        }else{
+            console.log("Con Equipos");
+            consultaSistemas(cvePer, result, res)
+        }
     });
 }
 
-const consultaSistemas =  function(cvePer, result){
+const consultaSistemas =  function(cvePer, result, equipos){
     console.log("Consulta sistemas");
     sql.query(`
         SELECT 
@@ -94,13 +106,10 @@ const consultaSistemas =  function(cvePer, result){
         secamgob_db_servicios.tblp_servicios.FecCap,
         secamgob_db_servicios.tblp_servicios.TipoServ,
         secamgob_db_catalogos.tblc_estatus.DesEst,
-        secamgob_db_si_rh.tblc_personal.Nombre,
         secamgob_db_catalogos.tblc_sistemas.Sistema
         FROM secamgob_db_servicios.tblp_servicios
         join secamgob_db_catalogos.tblc_sistemas
         on secamgob_db_catalogos.tblc_sistemas.CveSistema = secamgob_db_servicios.tblp_servicios.CveSistema
-        join secamgob_db_si_rh.tblc_personal
-        on secamgob_db_si_rh.tblc_personal.NoEmp = secamgob_db_servicios.tblp_servicios.CveUsuario
         join secamgob_db_catalogos.tblc_estatus
         on secamgob_db_catalogos.tblc_estatus.Tipo = 1 
         where secamgob_db_servicios.tblp_servicios.CvePer = ${cvePer}
@@ -113,52 +122,13 @@ const consultaSistemas =  function(cvePer, result){
         if(err) result(err, null);
 
         //result(null, res);
-        nombreAtendedor(result, res[0].CveUsuario, res);
+        nombreAtendedor(result, res[0].CveUsuario, res, equipos);
     });
 }
 
 Solicitud.list = (cvePer, result) => {
-
     console.log('solicitud => '+cvePer);
-
-    sql.query(
-    `
-        SELECT 
-        secamgob_db_servicios.tblp_servicios.IdEquipo,
-        secamgob_db_servicios.tblp_servicios.CveUsuario,
-        secamgob_db_servicios.tblp_servicios.Atendio,
-        secamgob_db_servicios.tblp_servicios.CveSistema
-        FROM secamgob_db_servicios.tblp_servicios
-        join secamgob_db_catalogos.tblc_estatus
-        on secamgob_db_catalogos.tblc_estatus.Tipo = 1 
-        where secamgob_db_servicios.tblp_servicios.CvePer = ${cvePer}
-        and secamgob_db_servicios.tblp_servicios.Estatus = 1
-        or secamgob_db_servicios.tblp_servicios.CvePer = ${cvePer}
-        and secamgob_db_servicios.tblp_servicios.Estatus = 2
-        group by secamgob_db_servicios.tblp_servicios.IdServicio
-        order by secamgob_db_servicios.tblp_servicios.IdServicio desc
-    `, (err, res) => {
-        if(err) result(err, null);
-
-
-        if(res.length == 0){
-            let error = {
-                msg: "Sin servicios pendientes."
-            }
-            result(error, null);
-        }else{
-            result(null, res);
-            for (let index = 0; index < res.length; index++) {
-                /*if(res[index].IdEquipo > 0 && res[index].CveSistema == 0){
-                    console.log("Equipos");
-                    consultaEquipos(cvePer, result);
-                }else if(res[index].CveSistema > 0 && res[index].IdEquipo == 0){
-                    console.log("Sistema");
-                    consultaSistemas(cvePer, result);
-                }*/
-            }
-        }
-    });
+    consultaEquipos(cvePer, result);
 }
 
 const equiposDelUsuario =  function(result,  solicitud, noEmp){
@@ -206,12 +176,16 @@ const usuariosDebajo = function(result, sistemas, solcitud, tipo){
             result(null, data);
         });
 
-    }else{
+    }else if(tipo=="Secretaria"){
         sql.query(`
-            SELECT 
-                secamgob_db_si_rh.tblc_personal.NoEmp,
-                secamgob_db_si_rh.tblc_personal.Nombre
-            FROM secamgob_db_si_rh.tblc_personal;
+            SELECT
+            secamgob_db_si_rh.tblc_personal.Nombre,
+            secamgob_db_si_rh.tblc_personal.NoEmp
+            FROM
+            secamgob_db_si_rh.tblc_personal
+            LEFT JOIN secamgob_db_si_rh.tblc_adscricion ON secamgob_db_si_rh.tblc_personal.CveAds = secamgob_db_si_rh.tblc_adscricion.CveAds
+            WHERE
+            secamgob_db_si_rh.tblc_adscricion.CveAds  = ${solcitud.cveAds}
         `, (err, res)=> {
             if(err) result(err, null);
 
@@ -225,7 +199,7 @@ const usuariosDebajo = function(result, sistemas, solcitud, tipo){
 }
 
 const todosLosSistemas =  function(result, tipo, solicitud){
-    console.log("Todos los sistemas");
+    console.log("Todos los sistemas",tipo);
     sql.query(`
         SELECT 
             secamgob_db_catalogos.tblc_sistemas.CveSistema,
@@ -235,9 +209,9 @@ const todosLosSistemas =  function(result, tipo, solicitud){
         if(err) result(err, null);
 
         if(tipo == "Tecnico"){
-            usuariosDebajo(result, res, solicitud);
-        }else if(tipo = "Secretaria"){
-
+            usuariosDebajo(result, res, solicitud, tipo);
+        }else if(tipo == "Secretaria"){
+            usuariosDebajo(result, res, solicitud, tipo);
         }else{
             equiposDelUsuario(result, res, solicitud.noEmp);
         }
@@ -263,6 +237,7 @@ Solicitud.save = (solicitud, result) => {
             console.log("SOPORTE");
             solicitud.tipoServicio = "SOPORTE";
         }
+        let fecha = new Date().toString().replace(/T/, ':').replace(/\.\w*/, '');
         sql.query(`
             INSERT INTO secamgob_db_servicios.tblp_servicios
             (
@@ -281,7 +256,7 @@ Solicitud.save = (solicitud, result) => {
             )
             VALUE 
             (
-                "${new Date()}",
+                "${fecha}",
                 "${folio}",
                 "${solicitud.noEmp}",
                 "${solicitud.cvePer}",
@@ -309,7 +284,7 @@ Solicitud.EquipoUsuario = (solicitud, result)  => {
 Solicitud.create = (solicitud, result) => {
     console.log("Crear: ",solicitud);
 
-    if(solicitud.cveModulo == undefined || solicitud.cveSistema == undefined || solicitud.CveUsuario == undefined){
+    if(solicitud.cveModulo == undefined || solicitud.cveSistema == undefined || solicitud.cveUsuario == undefined){
         let error = {
             msg: "Error los datos no son correcto o se encuentra vacios!"
         }
@@ -334,25 +309,22 @@ Solicitud.create = (solicitud, result) => {
         if(err) result(err, null);
 
         
-        //result(null, res);
-        //for (let i = 0; i < res.length; i++) {
-            console.log(res[res.length-1].Privilegio);
-            if(res[res.length-1].Privilegio == "Tecnico"){
-                //Secretaria de secretarias
-                //result(null, res);
-                todosLosSistemas(result, res[res.length-1].Privilegio,solicitud);
-            }else if(res[res.length-1].Privilegio == "Secretaria"){
-                //Secretarias
-                console.log( "Secretaria secretaria:\n2.-Mandar todos los usuarios de bajo de ella.");
-                todosLosSistemas(result, res[res.length-1].Privilegio, solicitud);
-                //result(null, "Secretaria normal");
-            }else{
-                //Usuarios normales
-                console.log( "Secretaria secretaria:\n3.-Mandar los equipos del usuario elegido.");
-                todosLosSistemas(result, res[res.length-1].Privilegio, solicitud);
-                //result(null, "normal");
-            }
-        //}
+        console.log(res[res.length-1].Privilegio);
+        if(res[res.length-1].Privilegio == "Tecnico"){
+            //Secretaria de secretarias
+            //result(null, res);
+            todosLosSistemas(result, res[res.length-1].Privilegio, solicitud);
+        }else if(res[res.length-1].Privilegio == "Secretaria"){
+            //Secretarias
+            console.log( "Secretaria secretaria:\n2.-Mandar todos los usuarios de bajo de ella.");
+            todosLosSistemas(result, res[res.length-1].Privilegio, solicitud);
+            //result(null, "Secretaria normal");
+        }else{
+            //Usuarios normales
+            console.log( "Secretaria secretaria:\n3.-Mandar los equipos del usuario elegido.");
+            todosLosSistemas(result, res[res.length-1].Privilegio, solicitud);
+            //result(null, "normal");
+        }
     });
 }
 
