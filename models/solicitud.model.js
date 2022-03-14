@@ -308,6 +308,13 @@ Solicitud.EquipoUsuario = (solicitud, result)  => {
 
 Solicitud.create = (solicitud, result) => {
     console.log("Crear: ",solicitud);
+
+    if(solicitud.cveModulo == undefined || solicitud.cveSistema == undefined || solicitud.CveUsuario == undefined){
+        let error = {
+            msg: "Error los datos no son correcto o se encuentra vacios!"
+        }
+        result(error, null);
+    }
     sql.query(`
         SELECT
             secamgob_db_catalogos.tblp_herencias.CveHerencia,
