@@ -30,3 +30,13 @@ exports.saveService = (req, res) =>{
         res.json(data);
     });    
 }
+
+exports.equipos = (req, res) => {
+    if(!req.body) return res.json("Error, envio de variables");
+
+    Solicitud.EquipoUsuario(new Solicitud(req.body), (err, data) =>{
+        if(err) return res.json(err);
+
+        res.json(data);
+    });
+}

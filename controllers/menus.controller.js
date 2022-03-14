@@ -10,3 +10,13 @@ exports.getAllMenus = (req, res) => {
         res.json(data);
     });
 };
+
+exports.getModulos = (req, res) => {
+    if(!req.body) return res.json("No hay datos disponibles");
+
+    Menu.getModulo(new Menu(req.body), (err, data) => {
+        if (err) return res.json(err);
+
+        res.json(data);
+    });
+}

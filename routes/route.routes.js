@@ -17,8 +17,10 @@ module.exports = app => {
     router.post("/resguardo", resguardo.resguardo);
 
     router.post("/menu", menu.getAllMenus);
+    router.post("/menu/modulo", menu.getModulos);
 
     router.post("/servicios/list", servicio.listService);
+    router.post("/servicios/equipos", servicio.equipos);
     router.post("/servicios/create", servicio.createService);
     router.post("/servicios/create/save", servicio.saveService);
 

@@ -54,7 +54,6 @@ Login.login = (login, result) => {
                 sql.query(`
                     SELECT
                     tblp_areas_sistemas.CveSistema,
-                    tblp_areas_sistemas.CveUsuario,
                     tblc_sistemas.Sistema
                     FROM
                     secamgob_db_catalogos.tblp_areas_sistemas
