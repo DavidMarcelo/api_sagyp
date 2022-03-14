@@ -6,11 +6,10 @@ const Login = function(login){
 };
 
 Login.getAll = result => {
-    let query = "SELECT * FROM secamgob_db_si_rh.tblc_personal";
+    let query = "SELECT * FROM secamgob_db_si_rh.tblc_personal WHERE NoEmp = 61854";
     sql.query(query, (err, res) => {
-        if(err) result (err, null);
+        if(err) result (null, err);
 
-        console.log(res);
         result (null, res);
     });
 };

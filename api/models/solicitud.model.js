@@ -1,22 +1,13 @@
 const sql = require('./connection');
 
 const Solicitud = function(solicitud){
-    this.folio = solicitud.folio;/*Consutar la misma tabla de tbpl_servicios extraen
-    en el folio mayor y le suman 1 para aumentarlo*/
-    this.noEmp = solicitud.noEmp;/*PARA EL ES EL SERVICIO*/
-    this.cvePer = solicitud.cvePer;/*PARA EL ES EL SERVICIO*/
-    this.servicio = solicitud.servicio;/*El mensaje que se envia */
-    this.servicio = solicitud.noOficio;/** Caundo la solcitud tiene un numero numero o no lo tiene
-    no obligatorio*/
-    this.servicio = solicitud.observaciones;
-    this.idEquipo = solicitud.idEquipo;/**El equipo del usuario */
-    this.noEmp = solicitud.cveUsuario; /*EL QUE CAPTURA*/
-    this.cveSistema = solicitud.cveSistema;/**sistema que se elige */
-    this.cveSistema = solicitud.tipoServicio;/**ES cuando elige si es sistemas o sosporte con el 
-    radio button */
-    this.extension = solicitud.extension;/**no obligarotio la extension */
-
-    /**Llamar al comentario de la tabla segun la columna */
+    this.cvePer = solicitud.cvePer;
+    this.extension = solicitud.extension;
+    this.cveSistema = solicitud.cveSistema;
+    this.idEquipo = solicitud.idEquipo;
+    this.servicio = solicitud.servicio;
+    this.noEmp = solicitud.noEmp;
+    this.cveAds = solicitud.cveAds;
 };
 
 const nombreAtendedor = function(result, cveUsuario, servicio){
@@ -32,9 +23,10 @@ const nombreAtendedor = function(result, cveUsuario, servicio){
             console.log("error");
             //result("Error de numero de empleado (No coincide con el que atendío).", null);
             let data = {
-                msg: "El numero de emplado no coincide!"
+                servicio: servicio,
+                atendio: res
             }
-            result(err, null);
+            result(null, data);
         }else{
             let data = {
                 servicio: servicio,
@@ -51,36 +43,6 @@ const consultaEquipos =  function(cvePer, result){
     //let atendioServicio = [];
     //let servicio = [];
     sql.query(`
-        SELECT 
-        secamgob_db_servicios.tblp_servicios.IdEquipo,
-        secamgob_db_servicios.tblp_servicios.CveUsuario,
-        secamgob_db_servicios.tblp_servicios.Atendio,
-        secamgob_db_servicios.tblp_servicios.CveSistema,
-        secamgob_db_servicios.tblp_servicios.Folio,
-        secamgob_db_servicios.tblp_servicios.FecCap,
-        secamgob_db_servicios.tblp_servicios.TipoServ,
-        secamgob_db_catalogos.tblc_estatus.DesEst,
-        secamgob_db_catalogos.tblc_tipoequipo.DesTipEqp
-        FROM secamgob_db_servicios.tblp_servicios
-        join secamgob_db_bienesinformaticos.tblp_equipos
-        on secamgob_db_bienesinformaticos.tblp_equipos.IdEquipo = secamgob_db_servicios.tblp_servicios.IdEquipo
-        join secamgob_db_catalogos.tblc_tipoequipo
-        on secamgob_db_catalogos.tblc_tipoequipo.CveTipEqp = secamgob_db_bienesinformaticos.tblp_equipos.CveTipEqp
-        join secamgob_db_catalogos.tblc_estatus
-        on secamgob_db_catalogos.tblc_estatus.Tipo = 1 
-        where secamgob_db_servicios.tblp_servicios.CvePer = ${cvePer}
-        and secamgob_db_servicios.tblp_servicios.Estatus = 1
-        or secamgob_db_servicios.tblp_servicios.CvePer = ${cvePer}
-        and secamgob_db_servicios.tblp_servicios.Estatus = 2
-        group by secamgob_db_servicios.tblp_servicios.IdServicio
-        order by secamgob_db_servicios.tblp_servicios.IdServicio desc
-    `, (err, res) =>{
-        if(err) result(err, null);
-
-        //result(null, res);
-        nombreAtendedor(result, res[0].CveUsuario, res);
-    });
-    /*sql.query(`
         SELECT 
         secamgob_db_servicios.tblp_servicios.IdEquipo,
         secamgob_db_servicios.tblp_servicios.CveUsuario,
@@ -121,41 +83,12 @@ const consultaEquipos =  function(cvePer, result){
             //}
             
         }
-    });*/
+    });
 }
 
-const consultaSistemas =  function(cvePer, result){
-    sql.query(`
-        SELECT 
-        secamgob_db_servicios.tblp_servicios.IdEquipo,
-        secamgob_db_servicios.tblp_servicios.CveUsuario,
-        secamgob_db_servicios.tblp_servicios.Atendio,
-        secamgob_db_servicios.tblp_servicios.CveSistema,
-        secamgob_db_servicios.tblp_servicios.Folio,
-        secamgob_db_servicios.tblp_servicios.FecCap,
-        secamgob_db_servicios.tblp_servicios.TipoServ,
-        secamgob_db_catalogos.tblc_estatus.DesEst,
-        secamgob_db_si_rh.tblc_personal.Nombre,
-        secamgob_db_catalogos.tblc_sistemas.Sistema
-        FROM secamgob_db_servicios.tblp_servicios
-        join secamgob_db_catalogos.tblc_sistemas
-        on secamgob_db_catalogos.tblc_sistemas.CveSistema = secamgob_db_servicios.tblp_servicios.CveSistema
-        join secamgob_db_si_rh.tblc_personal
-        on secamgob_db_si_rh.tblc_personal.NoEmp = secamgob_db_servicios.tblp_servicios.CveUsuario
-        join secamgob_db_catalogos.tblc_estatus
-        on secamgob_db_catalogos.tblc_estatus.Tipo = 1 
-        where secamgob_db_servicios.tblp_servicios.CvePer = ${cvePer}
-        and secamgob_db_servicios.tblp_servicios.Estatus = 1
-        or secamgob_db_servicios.tblp_servicios.CvePer = ${cvePer}
-        and secamgob_db_servicios.tblp_servicios.Estatus = 2
-        group by secamgob_db_servicios.tblp_servicios.IdServicio
-        order by secamgob_db_servicios.tblp_servicios.IdServicio desc
-    `, (err, res) =>{
-        if(err) result(err, null);
-
-        //result(null, res);
-        nombreAtendedor(result, res[0].CveUsuario, res);
-    });
+const consultaSistemas =  function(cvePer){
+    console.log("consulta inicial");
+    return 145;
 }
 
 Solicitud.list = (cvePer, result) => {
@@ -187,13 +120,67 @@ Solicitud.list = (cvePer, result) => {
             }
             result(error, null);
         }else{
+            let servicios = [];
+            let atendio = [];
+            console.log(res.length);
             for (let index = 0; index < res.length; index++) {
                 if(res[index].IdEquipo > 0 && res[index].CveSistema == 0){
-                    console.log("Equipos");
+                    console.log("incio");
                     consultaEquipos(cvePer, result);
                 }else if(res[index].CveSistema > 0 && res[index].IdEquipo == 0){
                     console.log("Sistema");
-                    consultaSistemas(cvePer, result);
+                    /*sql.query(`
+                        SELECT 
+                        secamgob_db_servicios.tblp_servicios.IdEquipo,
+                        secamgob_db_servicios.tblp_servicios.CveUsuario,
+                        secamgob_db_servicios.tblp_servicios.Atendio,
+                        secamgob_db_servicios.tblp_servicios.CveSistema,
+                        secamgob_db_servicios.tblp_servicios.Folio,
+                        secamgob_db_servicios.tblp_servicios.FecCap,
+                        secamgob_db_servicios.tblp_servicios.TipoServ,
+                        secamgob_db_catalogos.tblc_estatus.DesEst,
+                        secamgob_db_si_rh.tblc_personal.Nombre,
+                        secamgob_db_catalogos.tblc_sistemas.Sistema
+                        FROM secamgob_db_servicios.tblp_servicios
+                        join secamgob_db_catalogos.tblc_sistemas
+                        on secamgob_db_catalogos.tblc_sistemas.CveSistema = secamgob_db_servicios.tblp_servicios.CveSistema
+                        join secamgob_db_si_rh.tblc_personal
+                        on secamgob_db_si_rh.tblc_personal.NoEmp = secamgob_db_servicios.tblp_servicios.CveUsuario
+                        join secamgob_db_catalogos.tblc_estatus
+                        on secamgob_db_catalogos.tblc_estatus.Tipo = 1 
+                        where secamgob_db_servicios.tblp_servicios.CvePer = ${cvePer}
+                        and secamgob_db_servicios.tblp_servicios.Estatus = 1
+                        or secamgob_db_servicios.tblp_servicios.CvePer = ${cvePer}
+                        and secamgob_db_servicios.tblp_servicios.Estatus = 2
+                        group by secamgob_db_servicios.tblp_servicios.IdServicio
+                        order by secamgob_db_servicios.tblp_servicios.IdServicio desc
+                    `, (err, res) => {
+                        if(err) result("Error al cargar los sistemas!", null);
+
+
+                        if(res.length == 0){
+                            let error = {
+                                msg: "La clave no coincide!, verificar de nuevo."
+                            }
+                            result(error, null);
+                        }else{
+                            sql.query(`
+                                SELECT
+                                Nombre
+                                FROM secamgob_db_si_rh.tblc_personal
+                                WHERE secamgob_db_si_rh.tblc_personal.NoEmp = ${res.CveUsuario}
+                            `,(err, res)=>{
+                                if(err) result(err, null);
+
+                                if(res.length == 0){
+                                    result("Error de numero de empleado (No coincide con el que atendío).", null);
+                                }else{
+                                    atendio.push(res);
+                                }
+                            });
+                            servicios.push(res);
+                        }
+                    });*/
                 }
             }
         }
@@ -201,59 +188,44 @@ Solicitud.list = (cvePer, result) => {
 }
 
 Solicitud.save = (solicitud, result) => {
+    let hoy = new Date();
+    console.log(hoy);
     sql.query(`
-        SELECT Folio FROM
-        secamgob_db_servicios.tblp_servicios
-        order by secamgob_db_servicios.tblp_servicios.Folio desc
-    `,
-    (err, res)=>{
+        INSERT INTO secamgob_db_servicios.tblp_servicios
+        (
+            secamgob_db_servicios.tblp_servicios.Folio,
+            secamgob_db_servicios.tblp_servicios.FecCap,
+            secamgob_db_servicios.tblp_servicios.NoEmp,
+            secamgob_db_servicios.tblp_servicios.CvePer,
+            secamgob_db_servicios.tblp_servicios.IdEquipo,
+            secamgob_db_servicios.tblp_servicios.CveUsuario,
+            secamgob_db_servicios.tblp_servicios.CveSistema,
+            secamgob_db_servicios.tblp_servicios.Extension,
+            secamgob_db_servicios.tblp_servicios.Estatus,
+            secamgob_db_servicios.tblp_servicios.ObservaCerrado
+        )
+        VALUE 
+        (
+            "${1234}",
+            "${hoy}",
+            "${solicitud.noEmp}",
+            "${solicitud.cvePer}",
+            "${solicitud.idEquipo}",
+            "${solicitud.cveUsuario}",
+            "${solicitud.cveSistema}",
+            "${solicitud.extension}",
+            "${1}",
+            "${"no se quue llevara"}"
+        )
+    `, (err, res) => {
         if(err) result(err, null);
 
-        let folio = res[0].Folio+1;
-        sql.query(`
-            INSERT INTO secamgob_db_servicios.tblp_servicios
-            (
-                secamgob_db_servicios.tblp_servicios.Folio,
-                secamgob_db_servicios.tblp_servicios.NoEmp,
-                secamgob_db_servicios.tblp_servicios.CvePer,
-                secamgob_db_servicios.tblp_servicios.Servicio,
-                secamgob_db_servicios.tblp_servicios.IdEquipo,
-                secamgob_db_servicios.tblp_servicios.CveUsuario,
-                secamgob_db_servicios.tblp_servicios.CveSistema,
-                secamgob_db_servicios.tblp_servicios.Extension,
-                secamgob_db_servicios.tblp_servicios.Observaciones,
-                secamgob_db_servicios.tblp_servicios.TipoServicio
-                secamgob_db_servicios.tblp_servicios.NoOficio
-            )
-            VALUE 
-            (
-                "${folio}",
-                "${solicitud.noEmp}",
-                "${solicitud.cvePer}",
-                "${solicitud.servicio}",
-                "${solicitud.idEquipo}",
-                "${solicitud.cveUsuario}",
-                "${solicitud.cveSistema}",
-                "${solicitud.extension}",
-                "${solicitud.observaciones}",
-                "${solicitud.tipoServicio}",
-                "${solicitud.noOficio}"
-            )
-        `, (err, res) => {
-            if(err) result(err, null);
-
-            result(null, "Servicio agregado, exitosamente!")
-        });
+        result(null, "Servicio agregado, exitosamente!")
     });
 }
 
 Solicitud.create = (solicitud, result) => {
-
-    /*if(solicitud.privilegio == "Usuario"){
-
-    }else if(solicitud.privilegio == "Secretaria"){
-
-    }*/
+    console.log("noEmp: ", solicitud.noEmp, "Adscricion",solicitud.cveAds);
     sql.query(`SELECT 
         secamgob_db_bienesinformaticos.tblp_equipos.PaqCadena,
         secamgob_db_catalogos.tblc_tipoequipo.DesTipEqp,

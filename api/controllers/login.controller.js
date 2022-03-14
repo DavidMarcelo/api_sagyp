@@ -7,6 +7,7 @@ exports.findAll = (req, res) => {
         res.json(data);
     });
 };
+
 exports.loginController = (req, res) =>{
     if(!req.body) res.json("Error XD");
     console.log(req.body);

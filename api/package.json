@@ -1,0 +1,29 @@
+{
+  "name": "server_sagyp",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon run server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/client": "^3.5.9",
+    "apollo-server": "^3.6.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "express-session": "^1.17.2",
+    "graphql": "^16.3.0",
+    "heroku": "^7.59.3",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "nodemon": "^2.0.15",
+    "pg": "^8.7.3",
+    "sequelize": "^6.17.0",
+    "sequelize-cli": "^6.4.1",
+    "universal-cookie": "^4.0.4"
+  },
+  "description": ""
+}
