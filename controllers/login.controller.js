@@ -8,9 +8,8 @@ exports.findAll = (req, res) => {
     });
 };
 exports.loginController = (req, res) =>{
-    if(!req.body) res.json("Error XD");
-    console.log(req.body);
-
+    if(!req.body) res.json("No contiene ningun dato");
+    
     Login.login(new Login(req.body), (err, data) =>{
         if(err) return res.json(err);
 

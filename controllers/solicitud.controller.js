@@ -1,8 +1,7 @@
 const Solicitud = require('../models/solicitud.model');
 
 exports.listService = (req, res) => {
-    console.log("Lista de servicios solicitados");
-    if(!req.body) return res.json("Variable indefinido");;
+    if(!req.body) return res.json("No contiene datos!");;
     Solicitud.list(req.body.cvePer, (err, data) => {
         if (err) return res.json(err);
 

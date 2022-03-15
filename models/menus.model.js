@@ -7,8 +7,6 @@ const Menu = function(menu){
 };
 
 Menu.getMenu = (menu, result) => {
-    console.log('Menu => ',menu);
-
     sql.query(`
         SELECT
         tblp_herencias.CveModulo,
@@ -25,61 +23,69 @@ Menu.getMenu = (menu, result) => {
         ORDER BY
         tblc_modulos.orden ASC
     `, (err, res) => {
-        if(err) result(err, null);
-
-        if(res.length == 0){
+        if(err) {
             let error = {
-                msg: "No tiene permisos para este sistema!"
+                msg: "La clave de sistema o usuario no coinciden, verificar nuevamente!",
+                //err: err
             }
             result(error, null);
         }else{
-            /**/
-            result(null, res);
+            if(res.length == 0){
+                let error = {
+                    msg: "No tiene permisos para este sistema!"
+                }
+                result(error, null);
+            }else{
+                /**/
+                result(null, res);
+            }
         }
     });
 }
 
 Menu.getModulo = (menu, result) => {
-    console.log("Modulo");
-    sql.query(`
-        SELECT
-        tblp_herencias.CvePrivilegio,
-        tblp_herencias.CveModulo,
-        tblc_modulos.Modulo
-        FROM
-        secamgob_db_catalogos.tblp_herencias
-        LEFT JOIN secamgob_db_catalogos.tblc_modulos 
-        ON tblp_herencias.CveModulo = tblc_modulos.CveModulo
-        join secamgob_db_catalogos.tblc_privilegios
-        WHERE
-        tblp_herencias.CveSistema = ${menu.cveSistema} AND
-        tblp_herencias.CveUsuario = ${menu.cveUsuario} AND
-        tblc_modulos.OpModulo = ${menu.cveModulo}
-        group by tblc_modulos.CveModulo
-        ORDER BY tblc_modulos.orden ASC
-    `, (err, res)=>{
-        if(err) result(err, null);
-
-        result(null, res);
-        /*sql.query(`
+    if (menu.cveModulo==undefined || menu.cveModulo=="" || menu.cveSistema==undefined || menu.cveSistema==""
+    || menu.cveUsuario==undefined || menu.cveUsuario==""){
+        let error = {
+            msg: "Las claves no estan bien definidas, verificar nuevamente!"
+        }
+        result(error, null);
+    }else{
+        sql.query(`
             SELECT
-            tblp_herencias.CveHerencia,
             tblp_herencias.CvePrivilegio,
-            tblc_privilegios.Privilegio,
-            tblc_privilegios.Descripcion
+            tblp_herencias.CveModulo,
+            tblc_modulos.Modulo
             FROM
-            tblp_herencias
-            LEFT JOIN tblc_privilegios ON tblp_herencias.CvePrivilegio = tblc_privilegios.CvePrivilegio
+            secamgob_db_catalogos.tblp_herencias
+            LEFT JOIN secamgob_db_catalogos.tblc_modulos 
+            ON tblp_herencias.CveModulo = tblc_modulos.CveModulo
+            join secamgob_db_catalogos.tblc_privilegios
             WHERE
-            tblp_herencias.CveUsuario = ${menu.cveUsuario} AND
             tblp_herencias.CveSistema = ${menu.cveSistema} AND
-            tblp_herencias.CveModulo = ${res.CveModulo}
-            ORDER BY
-            tblc_privilegios.Privilegio ASC
-        `,(err,res) => {
-            result(null, err);
-        });*/
-    });
+            tblp_herencias.CveUsuario = ${menu.cveUsuario} AND
+            tblc_modulos.OpModulo = ${menu.cveModulo}
+            group by tblc_modulos.CveModulo
+            ORDER BY tblc_modulos.orden ASC
+        `, (err, res)=>{
+            if(err) {
+                let error = {
+                    msg: "No tienes ningun permiso para este modulo",
+                    //err: err
+                }
+                result(error, null);
+            }else{
+                if(res.length == 0){
+                    let error = {
+                        msg: "No tienes permisos para este modulo!",
+                    }
+                    result(error, null);
+                }else{
+                    result(null, res);
+                }
+            }
+        });
+    }
 }
 
 module.exports = Menu;

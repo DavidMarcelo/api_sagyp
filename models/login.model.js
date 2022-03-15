@@ -16,8 +16,6 @@ Login.getAll = result => {
 };
 
 Login.login = (login, result) => {
-    console.log('login => '+login.clave);
-
     sql.query(`
         SELECT 
         secamgob_db_si_rh.tblc_personal.CvePer,
@@ -39,12 +37,17 @@ Login.login = (login, result) => {
         where secamgob_db_si_rh.tblc_personal.NoEmp = ${login.noEmp}
         and secamgob_db_catalogos.tblc_usuarios.Clave = "${login.clave}"
     `, (err, res) => {
-        if(err) {            
-            result(err, null);
+        if(err) {
+            error = {
+                msj: "Datos desconocidos en usuario o contraseña",
+                //err: err
+            }
+            result(error, null);
+            //result(err, null);
         }else{
             if(res.length == 0){
                 error = {
-                    msj: "Error de usuario o contraseña!"
+                    msj: "Usuario o contraseña invalido!"
                 }
                 result(error, null);
             }else{

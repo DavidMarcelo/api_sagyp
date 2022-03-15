@@ -5,23 +5,37 @@ const Asistencia = function(asistencia){
 };
 
 Asistencia.asis = (noEmp, result) => {
-    console.log("Asistencia => ", noEmp);
+    if(noEmp == undefined){
+        let data = {
+            msg: "Agregar un numero de empleado!"
+        }
+        return result(data, null);
+    }
     
     sql.query(`
         SELECT 
-        * 
+        	* 
         FROM secamgob_db_si_rh.tblp_registros 
         WHERE secamgob_db_si_rh.tblp_registros.NoEmp = ${noEmp}
+        AND secamgob_db_si_rh.tblp_registros.Estatus = "F"
+        OR secamgob_db_si_rh.tblp_registros.NoEmp = ${noEmp}
+        AND secamgob_db_si_rh.tblp_registros.Estatus = "R"
         order by secamgob_db_si_rh.tblp_registros.Fecha desc`, (err, res)=>{
-        if(err) result(err, null);
-
-        if(res.length == 0){
-            error = {
-                msg: "Error de numero de empleado!"
+        if(err) {
+            let error = {
+                msg: "Error!, número de empleado no existe!",
+                //err: err
             }
             result(error, null);
         }else{
-            result(null, res);   
+            if(res.length == 0){
+                error = {
+                    msg: "No contiene ninguna Falta o Retardo."
+                }
+                result(error, null);
+            }else{
+                result(null, res);
+            }
         }
     });
 }

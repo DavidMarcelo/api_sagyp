@@ -5,11 +5,9 @@ const Resguardo = function(resguardo){
 };
 
 Resguardo.resg = (noEmp, result) => {
-    console.log("Resguardo: ", noEmp);
-
-    if(noEmp == undefined){
+    if(noEmp == undefined || noEmp == ""){
         let error = {
-            msg: "Dato no establecido, enviar solo numero de empelado como 'noEmp'."
+            msg: "Campo vacio, por favor ingrese el número de empleado."
         }
         result(error, null);
     }else{
@@ -30,17 +28,23 @@ Resguardo.resg = (noEmp, result) => {
         INNER JOIN secamgob_db_catalogos.tblc_marcasequipos
         ON secamgob_db_bienesinformaticos.tblp_equipos.CveMarEqp = secamgob_db_catalogos.tblc_marcasequipos.CveMarEqp
         WHERE secamgob_db_bienesinformaticos.tblp_equipos.NoEmp = ${noEmp}`, (err, res)=>{
-            if(err) result(err, null);
-
-            
-            if(res.length == 0){
+            if(err) {
                 let error = {
-                    msg: "Error, numero de empelado no valido!"
+                    msg: "Número de empleado invalido!",
+                    //err: err
                 }
                 result(error, null);
+                //result(err, null);
             }else{
-                result(null, res);
-            }        
+                if(res.length == 0){
+                    let error = {
+                        msg: "No tiene ningun equipo a su disposición!"
+                    }
+                    result(error, null);
+                }else{
+                    result(null, res);
+                }
+            }
         });
     }
 }
