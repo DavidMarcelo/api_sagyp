@@ -1,15 +1,17 @@
 
 module.exports = app => {
+    console.log("Rutas");
     const login = require("../controllers/login.controller");
     const asistencia = require("../controllers/asistencias.controller");
     const resguardo = require("../controllers/resguardo.controller");
     const menu = require("../controllers/menus.controller");
     const servicio = require("../controllers/solicitud.controller");
+    const notificaciones = require("../controllers/notificaciones.controller");
 
     var router = require('express').Router();
 
     router.post("/", login.findAll);
-    
+
     //Completado
     /**
      * Devuelve los registros de la persona como de los sistemas a los que pertenece! */ 
@@ -34,6 +36,9 @@ module.exports = app => {
     los equipos de resguardo del usuario*/
     router.post("/servicios/equipos", servicio.equipos);
     router.post("/servicios/create/save", servicio.saveService);
+
+    //Envio de notificaciones
+    router.post("/notificaciones", notificaciones.pushNotification);
 
     app.use('/api', router);
 }
